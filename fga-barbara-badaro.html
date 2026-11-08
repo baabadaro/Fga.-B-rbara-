@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fga. Bárbara Badaró</title>
+<style>
+  :root{
+    --bg:#f6f3ef; --card:#ffffff; --ink:#2b2a33; --muted:#6f6b78;
+    --brand:#2f8f86; --brand-soft:#e3f2f0; --rose:#d4707f; --rose-soft:#fbe9ec;
+    --gold:#e2b04a; --line:#e7e2db; --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  header{background:linear-gradient(135deg,#2f8f86,#3aa79b);color:#fff;padding:28px 20px 70px;text-align:center}
+  header small{letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-size:.75rem}
+  header h1{margin:6px 0 4px;font-size:clamp(1.5rem,4vw,2.2rem)}
+  header p{margin:0;opacity:.9}
+  main{max-width:980px;margin:-50px auto 40px;padding:0 16px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:0 4px 18px rgba(40,30,20,.07);padding:20px;margin-bottom:18px}
+  h2{margin:0 0 14px;font-size:1.15rem}
+  /* Guia */
+  .guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .g-item{border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;cursor:pointer;transition:.2s;background:#fff}
+  .g-item:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);border-color:var(--brand)}
+  .g-item svg{width:100%;height:auto;max-height:140px}
+  .g-item b{display:block;font-size:.92rem;margin-top:6px}
+  .g-item span{font-size:.78rem;color:var(--brand);font-weight:600}
+  /* Placar semanal */
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:6px}
+  .wk{text-align:center;font-size:.75rem;color:var(--muted)}
+  .wk .bar{height:70px;background:#f0ece6;border-radius:10px;position:relative;overflow:hidden;margin-bottom:4px}
+  .wk .fill{position:absolute;bottom:0;left:0;right:0;background:var(--brand);transition:height .6s}
+  .wk.done .fill{background:linear-gradient(var(--brand),#46b3a6)}
+  .wk .pts{font-weight:700;color:var(--ink);font-size:.8rem}
+  .total{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+  .total .big{font-size:1.8rem;font-weight:800;color:var(--brand)}
+  .total .big small{font-size:1rem;color:var(--muted);font-weight:600}
+  /* Abas dos dias */
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+  .tab{flex:1 0 auto;border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:999px;cursor:pointer;font-weight:600;color:var(--muted);font-size:.88rem;white-space:nowrap}
+  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tab.done::after{content:" ✓"}
+  .tab.today:not(.active){border-color:var(--brand);color:var(--brand)}
+  .blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+  .block{border:1px solid var(--line);border-radius:14px;padding:14px}
+  .block h3{margin:0 0 10px;font-size:1rem;display:flex;justify-content:space-between;align-items:center}
+  .block h3 .count{font-size:.78rem;background:var(--brand-soft);color:var(--brand);padding:2px 9px;border-radius:999px}
+  .ex{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;transition:.2s;margin-bottom:6px;background:#faf8f5}
+  .ex.checked{background:var(--brand-soft)}
+  .ex .thumb{width:62px;height:50px;flex:0 0 62px;border-radius:10px;background:#fff;border:1px solid var(--line);cursor:pointer;overflow:hidden}
+  .ex .thumb svg{width:100%;height:100%}
+  .ex label{flex:1;font-size:.88rem;cursor:pointer;display:flex;gap:8px;align-items:center}
+  .ex input{width:22px;height:22px;accent-color:var(--brand);flex:0 0 22px;cursor:pointer}
+  .ex .see{border:none;background:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:.78rem}
+  .actions{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+  .day-score{font-weight:700}
+  .btn{border:none;border-radius:12px;padding:12px 22px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.2s}
+  .btn-primary{background:var(--rose);color:#fff}
+  .btn-primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .locked .ex input{pointer-events:none}
+  .badge-done{background:var(--brand-soft);color:var(--brand);padding:8px 14px;border-radius:12px;font-weight:700}
+  .final{display:none;text-align:center;background:linear-gradient(135deg,#fff7e6,#fdeef1);border:2px solid var(--gold)}
+  .final.show{display:block}
+  .final .trophy{font-size:3rem}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0 30px}
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(30,25,35,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+  .modal.open{display:flex}
+  .modal-box{background:#fff;border-radius:20px;max-width:520px;width:100%;padding:22px;position:relative;max-height:92vh;overflow:auto}
+  .modal-box svg{width:100%;height:auto;background:#fbf9f6;border-radius:14px}
+  .modal-box h3{margin:12px 0 6px}
+  .modal-box ol{padding-left:20px;margin:6px 0 12px;font-size:.92rem}
+  .close{position:absolute;top:10px;right:14px;border:none;background:none;font-size:1.6rem;cursor:pointer;color:var(--muted)}
+  .timer{display:flex;align-items:center;gap:14px;background:var(--rose-soft);padding:10px 14px;border-radius:14px}
+  .timer .t{font-size:1.8rem;font-weight:800;color:var(--rose);min-width:70px;text-align:center}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;transition:.35s;z-index:60;font-size:.9rem}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  /* Animações das ilustrações */
+  .trill{animation:trill .09s infinite alternate;transform-origin:100px 82px}
+  @keyframes trill{from{transform:translateY(-1.2px) scaleY(1.02)}to{transform:translateY(1.2px) scaleY(.98)}}
+  .wave{animation:wave 1s infinite}
+  .wave.d2{animation-delay:.33s}.wave.d3{animation-delay:.66s}
+  @keyframes wave{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+  .tongueUp{animation:tongueUp 4s ease-in-out infinite}
+  @keyframes tongueUp{0%,12%{transform:translateY(0)}35%,85%{transform:translateY(-26px)}100%{transform:translateY(0)}}
+  .contact{animation:contact 4s ease-in-out infinite}
+  @keyframes contact{0%,30%{opacity:0}40%,82%{opacity:1}92%,100%{opacity:0}}
+  .squeeze{animation:squeeze 2.4s ease-in-out infinite;transform-origin:145px 97px}
+  @keyframes squeeze{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.9)}}
+  .press{animation:press 2.4s ease-in-out infinite}
+  .press.dn{animation-name:pressDn}
+  @keyframes press{0%,100%{transform:translateY(-4px)}50%{transform:translateY(2px)}}
+  @keyframes pressDn{0%,100%{transform:translateY(4px)}50%{transform:translateY(-2px)}}
+  .ring{animation:ring 30s linear infinite}
+  @keyframes ring{from{stroke-dashoffset:0}to{stroke-dashoffset:113}}
+  .spin{animation:spin 3s linear infinite;transform-origin:100px 84px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:0s!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <small>Programa semanal de fonoterapia</small>
+  <h1>Fga. Bárbara Badaró</h1>
+  <p>3 blocos por dia · 4 exercícios por bloco</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Como fazer cada exercício</h2>
+    <div class="guide" id="guide"></div>
+  </section>
+
+  <section class="card">
+    <div class="total">
+      <div>
+        <h2 style="margin:0">Pontuação da semana</h2>
+        <div class="big" id="weekTotal">0 <small>/ 84 pontos</small></div>
+      </div>
+      <button class="btn btn-ghost" id="resetWeek">Reiniciar semana</button>
+    </div>
+    <div class="week" id="weekBars"></div>
+  </section>
+
+  <section class="card final" id="finalCard">
+    <div class="trophy">🏆</div>
+    <h2 id="finalTitle">Semana concluída!</h2>
+    <p id="finalText"></p>
+  </section>
+
+  <section class="card" id="dayCard">
+    <div class="tabs" id="tabs"></div>
+    <div class="blocks" id="blocks"></div>
+    <div class="actions">
+      <div class="day-score" id="dayScore">Pontuação do dia: 0 / 12</div>
+      <div id="dayAction"></div>
+    </div>
+  </section>
+</main>
+
+<footer>Cada exercício marcado vale 1 ponto · 12 pontos por dia · 84 pontos na semana<br>Seu progresso fica salvo neste navegador.</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="close" id="closeModal" aria-label="Fechar">×</button>
+    <div id="modalArt"></div>
+    <h3 id="modalTitle"></h3>
+    <ol id="modalSteps"></ol>
+    <div class="timer" id="timerBox">
+      <div class="t" id="timerT">30s</div>
+      <button class="btn btn-primary" id="timerBtn">Iniciar cronômetro</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- Ilustrações (SVG animado) ---------- */
+const LIPS_UP = 'M50 82 Q72 64 100 74 Q128 64 150 82 Q100 88 50 82 Z';
+const LIPS_DN = 'M50 82 Q100 90 150 82 Q130 110 100 110 Q70 110 50 82 Z';
+const SKIN = '#f3d3bd', LIP1 = '#c95f6d', LIP2 = '#db7b88', WOOD = '#e6c48f';
+
+function frontBase(inner){
+  return `<rect x="10" y="20" width="180" height="125" rx="40" fill="${SKIN}"/>
+          <path d="M60 40 Q100 30 140 40" stroke="#d9b49b" stroke-width="3" fill="none" stroke-linecap="round"/>${inner}`;
+}
+function profileBase(inner){
+  return `<path d="M15 15 L125 15 Q138 38 136 58 L150 68 Q143 74 140 78 L142 86 Q150 88 150 93 Q146 97 141 98 Q148 101 147 107 Q140 113 137 117 Q146 131 128 148 L15 148 Z" fill="${SKIN}"/>
+          <path d="M140 86 Q150 88 150 93 Q146 97 141 98 Q137 92 140 86Z" fill="${LIP1}"/>
+          <path d="M141 98 Q148 101 147 107 Q141 111 138 110 Q137 103 141 98Z" fill="${LIP2}"/>
+          <circle cx="92" cy="50" r="4" fill="#5a4a44"/>${inner}`;
+}
+
+const ART = {
+  vibracao: () => `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">${frontBase(`
+      <g class="trill"><path d="${LIPS_UP}" fill="${LIP1}"/><path d="${LIPS_DN}" fill="${LIP2}"/></g>
+      <rect x="22" y="78" width="156" height="8" rx="4" fill="${WOOD}" stroke="#c9a46b"/>
+      <path class="wave" d="M160 60 q8 8 0 16" stroke="#2f8f86" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path class="wave d2" d="M168 54 q12 14 0 28" stroke="#2f8f86" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path class="wave d3" d="M176 48 q16 20 0 40" stroke="#2f8f86" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <text x="100" y="135" text-anchor="middle" font-size="14" font-weight="700" fill="#2f8f86">brrrrr…</text>`)}</svg>`,
+
+  ceu: () => `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="15" width="180" height="135" rx="30" fill="${SKIN}"/>
+      <path d="M30 95 Q35 40 100 38 Q160 40 170 75 L170 120 Q100 140 30 120 Z" fill="#8c3b46"/>
+      <path d="M38 70 Q100 30 168 72" stroke="#f0b6bd" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <g class="tongueUp"><path d="M40 122 Q60 92 105 92 Q150 92 160 112 Q150 125 100 126 Q60 128 40 122Z" fill="#e88b96"/>
+      <path d="M70 108 Q105 102 140 108" stroke="#d27380" stroke-width="2" fill="none"/></g>
+      <circle class="contact" cx="140" cy="62" r="11" fill="none" stroke="#2f8f86" stroke-width="3" stroke-dasharray="4 3"/>
+      <text x="100" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#2f8f86">céu da boca</text>
+      <rect x="172" y="76" width="10" height="44" rx="5" fill="${LIP1}"/>
+      <text x="100" y="146" text-anchor="middle" font-size="12" font-weight="700" fill="#8a4a52">segure 30 s</text></svg>`,
+
+  rotacao: () => `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">${frontBase(`
+      <ellipse cx="100" cy="84" rx="66" ry="34" fill="none" stroke="#2f8f86" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>
+      <path d="M100 84 m66 0" />
+      <g class="spin"><path d="M164 76 l6 10 l-11 -1 z" fill="#2f8f86"/></g>
+      <path d="M58 83 Q100 78 142 83" stroke="${LIP1}" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M58 87 Q100 94 142 87" stroke="${LIP2}" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <ellipse rx="12" ry="9" fill="#e8bea3" stroke="#d29f84" stroke-width="1.5">
+        <animateMotion dur="3s" repeatCount="indefinite" path="M100 58 A52 24 0 1 1 99.9 58 Z"/>
+      </ellipse>
+      <text x="100" y="138" text-anchor="middle" font-size="12" font-weight="700" fill="#2f8f86">língua girando por dentro</text>`)}</svg>`,
+
+  segurar: () => `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">${profileBase(`
+      <g class="squeeze"><rect x="143" y="95" width="52" height="6" rx="3" fill="${WOOD}" stroke="#c9a46b"/></g>
+      <g class="press"><path d="M158 72 v10 m-5 -5 l5 6 l5 -6" stroke="#d4707f" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+      <g class="press dn"><path d="M158 124 v-10 m-5 5 l5 -6 l5 6" stroke="#d4707f" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+      <circle cx="45" cy="105" r="18" fill="#fff" stroke="#f1d9dd" stroke-width="5"/>
+      <circle class="ring" cx="45" cy="105" r="18" fill="none" stroke="#d4707f" stroke-width="5" stroke-dasharray="113" transform="rotate(-90 45 105)"/>
+      <text x="45" y="109" text-anchor="middle" font-size="11" font-weight="800" fill="#d4707f">30s</text>`)}</svg>`
+};
+
+const EXERCISES = [
+  { id:'vibracao', name:'Vibração de lábios com espátula', timer:0,
+    steps:['Apoie a espátula levemente sobre os lábios, na horizontal.','Solte o ar fazendo os lábios vibrarem ("brrrr"), sem travar a mandíbula.','Mantenha a vibração contínua e o mais estável possível.'] },
+  { id:'ceu', name:'Língua no céu da boca por 30 segundos', timer:30,
+    steps:['Leve a ponta e o corpo da língua até o céu da boca (palato).','Pressione a língua para cima, com os dentes levemente afastados.','Mantenha a posição por 30 segundos.'] },
+  { id:'rotacao', name:'Rotação de língua dentro dos lábios', timer:0,
+    steps:['Com a boca fechada, coloque a língua entre os dentes e os lábios.','Faça círculos lentos, passando por cima e por baixo dos dentes.','Faça as voltas para um lado e depois para o outro.'] },
+  { id:'segurar', name:'Segurar a espátula entre os lábios por 30 segundos', timer:30,
+    steps:['Coloque a espátula entre os lábios, sem apoiar nos dentes.','Pressione os lábios para manter a espátula reta e firme.','Segure por 30 segundos sem deixar cair.'] }
+];
+
+/* ---------- Estado (salvo no navegador) ---------- */
+const DAYS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const PER_DAY = 3 * EXERCISES.length; // 12
+const KEY = 'fga_barbara_badaro_semana_domingo_v2';
+let memoryStore = null;
+
+function blankState(){
+  return { days: DAYS.map(() => ({ checks: Array(PER_DAY).fill(false), done:false, score:0 })) };
+}
+function load(){
+  try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch(e) {}
+  return memoryStore || blankState();
+}
+function save(){
+  memoryStore = state;
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+}
+let state = load();
+const todayIdx = new Date().getDay(); // domingo = 0
+let current = todayIdx;
+
+/* ---------- Render ---------- */
+function renderGuide(){
+  document.getElementById('guide').innerHTML = EXERCISES.map(ex => `
+    <div class="g-item" data-ex="${ex.id}">${ART[ex.id]()}<b>${ex.name}</b><span>▶ Ver movimento</span></div>`).join('');
+}
+
+function renderTabs(){
+  document.getElementById('tabs').innerHTML = DAYS.map((d,i) =>
+    `<button class="tab ${i===current?'active':''} ${state.days[i].done?'done':''} ${i===todayIdx?'today':''}" data-day="${i}">${d}${i===todayIdx?' (hoje)':''}</button>`).join('');
+}
+
+function renderDay(){
+  const day = state.days[current];
+  const blocks = document.getElementById('blocks');
+  blocks.classList.toggle('locked', day.done);
+  let html = '';
+  for (let b = 0; b < 3; b++){
+    const done = EXERCISES.filter((_,e) => day.checks[b*EXERCISES.length+e]).length;
+    html += `<div class="block"><h3>Bloco ${b+1}<span class="count">${done}/${EXERCISES.length}</span></h3>`;
+    EXERCISES.forEach((ex,e) => {
+      const idx = b*EXERCISES.length + e, on = day.checks[idx];
+      html += `<div class="ex ${on?'checked':''}">
+        <div class="thumb" data-ex="${ex.id}" title="Ver movimento">${ART[ex.id]()}</div>
+        <label><input type="checkbox" data-idx="${idx}" ${on?'checked':''} ${day.done?'disabled':''}>${ex.name}</label>
+        <button class="see" data-ex="${ex.id}">ver</button></div>`;
+    });
+    html += `</div>`;
+  }
+  blocks.innerHTML = html;
+  updateDayScore();
+  const act = document.getElementById('dayAction');
+  act.innerHTML = day.done
+    ? `<span class="badge-done">✓ Dia concluído: ${day.score} pontos</span> <button class="btn btn-ghost" id="reopen">Refazer dia</button>`
+    : `<button class="btn btn-primary" id="concluir">Concluir ${DAYS[current]}</button>`;
+}
+
+function updateDayScore(){
+  const n = state.days[current].checks.filter(Boolean).length;
+  document.getElementById('dayScore').textContent = `Pontuação do dia: ${n} / ${PER_DAY}`;
+}
+
+function renderWeek(){
+  const total = state.days.reduce((s,d) => s + (d.done ? d.score : 0), 0);
+  document.getElementById('weekTotal').innerHTML = `${total} <small>/ ${PER_DAY*7} pontos</small>`;
+  document.getElementById('weekBars').innerHTML = state.days.map((d,i) => {
+    const pct = d.done ? d.score/PER_DAY*100 : 0;
+    return `<div class="wk ${d.done?'done':''}"><div class="bar"><div class="fill" style="height:${pct}%"></div></div>
+      <div class="pts">${d.done ? d.score : '–'}</div>${DAYS[i].slice(0,3)}</div>`;
+  }).join('');
+
+  const allDone = state.days.every(d => d.done);
+  const fc = document.getElementById('finalCard');
+  fc.classList.toggle('show', allDone || state.days[6].done);
+  if (allDone || state.days[6].done){
+    const pct = Math.round(total/(PER_DAY*7)*100);
+    const msg = pct >= 90 ? 'Excelente! Você manteve uma rotina muito consistente.'
+              : pct >= 70 ? 'Muito bom! Continue assim na próxima semana.'
+              : pct >= 40 ? 'Bom começo! Tente completar mais blocos por dia.'
+              : 'Cada exercício conta. Vamos tentar aumentar na próxima semana!';
+    document.getElementById('finalTitle').textContent = allDone ? 'Semana concluída!' : 'Resultado até sábado';
+    document.getElementById('finalText').innerHTML =
+      `Pontuação final: <b>${total} de ${PER_DAY*7} pontos (${pct}%)</b><br>${msg}<br><small>Dias concluídos: ${state.days.filter(d=>d.done).length} de 7</small>`;
+  }
+}
+
+function renderAll(){ renderTabs(); renderDay(); renderWeek(); }
+
+/* ---------- Eventos ---------- */
+document.addEventListener('change', e => {
+  if (e.target.matches('input[data-idx]')){
+    const idx = +e.target.dataset.idx;
+    state.days[current].checks[idx] = e.target.checked;
+    save();
+    e.target.closest('.ex').classList.toggle('checked', e.target.checked);
+    const b = Math.floor(idx/EXERCISES.length);
+    const cnt = EXERCISES.filter((_,k)=>state.days[current].checks[b*EXERCISES.length+k]).length;
+    document.querySelectorAll('.block .count')[b].textContent = `${cnt}/${EXERCISES.length}`;
+    updateDayScore();
+  }
+});
+
+document.addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (tab){ current = +tab.dataset.day; renderTabs(); renderDay(); return; }
+
+  const exEl = e.target.closest('[data-ex]');
+  if (exEl){ openModal(exEl.dataset.ex); return; }
+
+  if (e.target.id === 'concluir'){
+    const d = state.days[current];
+    d.score = d.checks.filter(Boolean).length;
+    d.done = true; save(); renderAll();
+    toast(`${DAYS[current]} concluída: ${d.score} de ${PER_DAY} pontos!`);
+    if (current < 6 && !state.days[current+1].done){ /* mantém no dia para ver o resultado */ }
+    if (current === 6 || state.days.every(x=>x.done))
+      document.getElementById('finalCard').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  if (e.target.id === 'reopen'){
+    state.days[current].done = false; save(); renderAll(); return;
+  }
+  if (e.target.id === 'resetWeek'){
+    if (confirm('Apagar todo o progresso e começar uma nova semana?')){
+      state = blankState(); save(); renderAll(); toast('Nova semana iniciada!');
+    }
+  }
+});
+
+/* ---------- Modal + cronômetro ---------- */
+const modal = document.getElementById('modal');
+let timerId = null, remaining = 30;
+function openModal(id){
+  const ex = EXERCISES.find(x => x.id === id);
+  document.getElementById('modalArt').innerHTML = ART[id]();
+  document.getElementById('modalTitle').textContent = ex.name;
+  document.getElementById('modalSteps').innerHTML = ex.steps.map(s => `<li>${s}</li>`).join('');
+  resetTimer(ex.timer || 30);
+  document.getElementById('timerBtn').textContent = ex.timer ? 'Iniciar 30 segundos' : 'Iniciar cronômetro (30s)';
+  modal.classList.add('open');
+}
+function resetTimer(sec){ clearInterval(timerId); timerId=null; remaining=sec; document.getElementById('timerT').textContent = remaining+'s'; }
+document.getElementById('timerBtn').addEventListener('click', () => {
+  const btn = document.getElementById('timerBtn');
+  if (timerId){ resetTimer(30); btn.textContent='Iniciar 30 segundos'; return; }
+  btn.textContent = 'Parar';
+  timerId = setInterval(() => {
+    remaining--; document.getElementById('timerT').textContent = remaining+'s';
+    if (remaining <= 0){ resetTimer(30); btn.textContent='Repetir 30 segundos'; toast('Tempo concluído! 👏'); try{navigator.vibrate&&navigator.vibrate(300)}catch(e){} }
+  }, 1000);
+});
+function closeModal(){ modal.classList.remove('open'); resetTimer(30); }
+document.getElementById('closeModal').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function toast(msg){
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+renderGuide();
+renderAll();
+</script>
+</body>
+</html>
